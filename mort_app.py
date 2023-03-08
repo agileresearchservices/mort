@@ -11,7 +11,7 @@ PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
 PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
 
 def get_answer(query):
-    query = "Answer this question from the perspective of a mortgage broker in a training session. Be consice. Answer the question in markdown format and use bullet points and paragraphs whenever needed. If you don't know the answer from the context, refer to general Mortgage industry information." + query
+    query = "Answer this question from the perspective of a mortgage broker in a training session. Be consice. Answer the question in markdown format and use bullet points and paragraphs whenever needed. If you don't know the answer from the context, refer to general Mortgage, Banking, and Real Estate industry information." + query
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
     pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
     index_name = "aimortgageapp"
