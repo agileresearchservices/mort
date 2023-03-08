@@ -1,6 +1,13 @@
 streamlit
-langchain
+langchain=
 uuid
 pinecone-client
 openai
 pydantic
+aiohttp
+dataclasses-json
+numpy
+PyYAML
+requests
+SQLAlchemy
+tenacity

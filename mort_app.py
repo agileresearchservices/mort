@@ -16,7 +16,7 @@ def get_answer(query):
     index_name = "aimortgageapp"
     docsearch = Pinecone.from_existing_index(index_name, embeddings)
     llm = OpenAI(temperature=0.7, max_tokens=512 ,openai_api_key=OPENAI_API_KEY)
-    chain = load_qa_chain(llm, chain_type="stuff", prompt=query)
+    chain = load_qa_chain(llm, chain_type="stuff")
     docs = docsearch.similarity_search(query, include_metadata=True)
     answer = chain.run(input_documents=docs, question=query)
     return answer
