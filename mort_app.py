@@ -1,6 +1,4 @@
 import streamlit as st
-from langchain.document_loaders import DirectoryLoader
-from langchain.document_loaders import TextLoader
 from uuid import uuid4
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
