@@ -3,3 +3,4 @@ langchain
 uuid
 pinecone-client
 openai
+pydantic
