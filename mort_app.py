@@ -6,12 +6,9 @@ import pinecone
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 
-OPENAI_API_KEY =  st.secrets.OPENAI_API_KEY
-PINECONE_API_KEY =  st.secrets.PINECONE_API_KEY
-PINECONE_API_ENV =  st.secrets.PINECONE_API_ENV
-
-st.secrets()
-
+OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
+PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
+PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
 
 def get_answer(query):
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
