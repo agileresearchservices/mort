@@ -63,20 +63,20 @@ if query:
     #     st.write(', '.join(child_urls))
 
     for doc in docs:
-    title = str(doc.metadata.get('title'))
-    short_description = str(doc.metadata.get('short_description'))
-    child_url = str(doc.metadata.get('url_child'))
-    parent_url = str(doc.metadata.get('url_parent'))
-    timestamp = datetime.strptime(str(doc.metadata.get('timestamp')), "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
-    key = title + '||' + short_description
-    if key not in unique_docs:
-        unique_docs[key] = {'child_urls': {child_url: {timestamp}},
-                            'parent_url': parent_url}
-    else:
-        if child_url not in unique_docs[key]['child_urls']:
-            unique_docs[key]['child_urls'][child_url] = {timestamp}
+        title = str(doc.metadata.get('title'))
+        short_description = str(doc.metadata.get('short_description'))
+        child_url = str(doc.metadata.get('url_child'))
+        parent_url = str(doc.metadata.get('url_parent'))
+        timestamp = datetime.strptime(str(doc.metadata.get('timestamp')), "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
+        key = title + '||' + short_description
+        if key not in unique_docs:
+            unique_docs[key] = {'child_urls': {child_url: {timestamp}},
+                                'parent_url': parent_url}
         else:
-            unique_docs[key]['child_urls'][child_url].add(timestamp)
+            if child_url not in unique_docs[key]['child_urls']:
+                unique_docs[key]['child_urls'][child_url] = {timestamp}
+            else:
+                unique_docs[key]['child_urls'][child_url].add(timestamp)
 
     for title_desc, doc_info in unique_docs.items():
         st.write('## ' + title_desc.split('||')[0])
