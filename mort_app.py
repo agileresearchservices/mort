@@ -21,7 +21,7 @@ resources = []
 
 def get_answer(query):
     query = "Answer this question from the perspective of a mortgage broker in a training session. Be consice. If you don't know the answer from the context, refer to general Mortgage, Banking, and Real Estate industry information. If you find foul language, please rewrite it in a professional way." + query
-    docs = docsearch.similarity_search(query, include_metadata=True, k=10)
+    docs = docsearch.similarity_search(query, include_metadata=True, k=20)
     answer = chain.run(input_documents=docs, question=query)
     return answer, docs
 
