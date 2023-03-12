@@ -31,7 +31,8 @@ query = st.text_input("Enter your question here")
 
 
 if query:
-    answer, docs = get_answer(query)
+    with st.spinner(f"Thinking..."):
+        answer, docs = get_answer(query)
     st.write("## Mort Says: ")
     st.write(answer)
     st.markdown('---')
