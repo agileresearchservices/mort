@@ -62,7 +62,8 @@ if query:
         st.write('**Jump to Moments:** ')
         child_urls = []
         for child_url, timestamps in doc_info['child_urls'].items():
-            child_urls.append((child_url, timestamps))
-        child_urls = sorted(child_urls, key=lambda x: sorted(x[1])[0])
+            timestamps_str = ", ".join(sorted(timestamps))
+            child_urls.append((child_url, timestamps_str))
+        child_urls = sorted(child_urls, key=lambda x: x[1])
         for child_url, timestamps in child_urls:
-            st.write(f"[{', '.join(timestamps)}]({child_url})")
+            st.write(f"[{timestamps}]({child_url})")
