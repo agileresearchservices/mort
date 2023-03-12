@@ -11,10 +11,6 @@ from datetime import datetime
 # PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
 # PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
 
-OPENAI_API_KEY = "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"
-PINECONE_API_KEY = "25503a02-7eed-4dbb-9358-d36203fc86b1"
-PINECONE_API_ENV = "us-east1-gcp"
-
 embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
 index_name = "aimortgageapp"
