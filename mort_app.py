@@ -7,9 +7,9 @@ from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from datetime import datetime
 
-# OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
-# PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
-# PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
+OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
+PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
+PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
 
 embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
