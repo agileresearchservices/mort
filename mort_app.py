@@ -61,7 +61,7 @@ if query:
     #     for child_url, timestamp in doc_info['child_urls']:
     #         child_urls.append(f"[{timestamp}]({child_url})")
     #     st.write(', '.join(child_urls))
-
+    unique_docs = {}
     for doc in docs:
         title = str(doc.metadata.get('title'))
         short_description = str(doc.metadata.get('short_description'))
