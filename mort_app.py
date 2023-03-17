@@ -51,7 +51,10 @@ if query:
         short_description = str(doc.metadata.get('short_description'))
         child_url = str(doc.metadata.get('url_child'))
         parent_url = str(doc.metadata.get('url_parent'))
-        timestamp = datetime.strptime(str(doc.metadata.get('timestamp')), "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
+        try:
+            timestamp = datetime.strptime(str(doc.metadata.get('timestamp')), "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
+        except ValueError:
+            timestamp = "00:00:00"
         key = title + '||' + short_description
         if key not in unique_docs:
             unique_docs[key] = {'child_urls': {child_url: {timestamp}},
