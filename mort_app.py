@@ -19,6 +19,7 @@ docsearch = Pinecone.from_existing_index(index_name, embeddings)
 llm = OpenAI(temperature=0.3, max_tokens=1024 ,openai_api_key=OPENAI_API_KEY)
 chain = load_qa_chain(llm, chain_type="stuff")
 resources = []
+MAX_RETRIES = 3
 
 def clean_output(output: str) -> str:
     # Remove special characters
