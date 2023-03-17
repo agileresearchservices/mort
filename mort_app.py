@@ -66,8 +66,13 @@ if query:
                 unique_docs[key]['child_urls'][child_url].add(timestamp)
 
     for title_desc, doc_info in unique_docs.items():
-        st.markdown('## ' + title_desc.split('||')[0])
-        st.markdown('**Short Description:** ' + title_desc.split('||')[1])
+        title, short_desc = title_desc.split('||')
+
+        if not title or not short_desc:
+            continue
+
+        st.markdown('## ' + title)
+        st.markdown('**Short Description:** ' + short_desc)
         st.markdown(f"[Start from beginning]({doc_info['parent_url']})")
         st.markdown('**Jump to Moments:** ')
         child_urls = []
