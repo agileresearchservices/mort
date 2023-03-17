@@ -6,6 +6,7 @@ import pinecone
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from datetime import datetime
+import re
 
 OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
 PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
@@ -18,6 +19,15 @@ docsearch = Pinecone.from_existing_index(index_name, embeddings)
 llm = OpenAI(temperature=0.3, max_tokens=512 ,openai_api_key=OPENAI_API_KEY)
 chain = load_qa_chain(llm, chain_type="stuff")
 resources = []
+
+def clean_output(output: str) -> str:
+    # Remove special characters
+    cleaned_output = re.sub(r'[^a-zA-Z0-9,.:;?!()\- \n]', '', output)
+
+    # Add spaces after punctuation marks
+    cleaned_output = re.sub(r'([.,:;?!()\-])(\w)', r'\1 \2', cleaned_output)
+
+    return cleaned_output
 
 def get_answer(query):
     query = "Answer this question from the perspective of a mortgage broker in a training session. Be consice. If you don't know the answer from the context, refer to general Mortgage, Banking, and Real Estate industry information. If you find foul language, please rewrite it in a professional way." + query
@@ -71,11 +81,14 @@ if query:
         if not title or not short_desc:
             continue
 
+        cleaned_short_desc = clean_output(short_desc)
+
         st.markdown('## ' + title)
-        st.markdown('**Short Description:** ' + short_desc)
+        st.markdown('**Short Description:** ' + cleaned_short_desc)
         st.markdown(f"[Start from beginning]({doc_info['parent_url']})")
         st.markdown('**Jump to Moments:** ')
         child_urls = []
         for child_url, timestamps in doc_info['child_urls'].items():
             child_urls.append(f"[{', '.join(timestamps)}]({child_url})")
         st.write(', '.join(child_urls))
+
