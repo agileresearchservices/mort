@@ -51,7 +51,7 @@ if query:
     with st.spinner(f"Thinking..."):
         answer, docs = get_answer(query)
     st.write("## Mort Says: ")
-    st.markdown(answer)
+    st.markdown(clean_output(answer))
     st.markdown('---')
     st.write("## Additional Resources:")
 
