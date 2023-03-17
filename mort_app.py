@@ -42,7 +42,6 @@ def get_answer(query):
     answer = chain.run(input_documents=docs, question=query)
     return answer, docs
 
-
 st.title("Mort, Your Brokerage AI Assistant")
 st.write("I am your virtual assistant. You can ask me questions or, I can perform tasks such as writing an email and other administrative tasks.")
 st.write("Here a few things to try:")
@@ -82,7 +81,7 @@ if query:
     answer, docs = process_query(query)
     if answer and docs:
         st.write("## Mort Says: ")
-        st.markdown(clean_output(answer))
+        st.markdown(answer)
         st.markdown('---')
         st.write("## Additional Resources:")
 
