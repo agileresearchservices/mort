@@ -31,7 +31,13 @@ def clean_output(output: str) -> str:
     return cleaned_output
 
 def get_answer(query):
-    query = "Answer this question from the perspective of a mortgage broker in a training session. Be consice. If you don't know the answer from the context, refer to general Mortgage, Banking, and Real Estate industry information. If you find foul language, please rewrite it in a professional way." + query
+    query = "Answer the question based on the context below. You should follow ALL the following rules when generating and answer: " \
+        "- Be concise in your response " \
+        "- If the context doesn't provide the necessary information, use general Mortgage, Banking, and Real Estate industry knowledge. " \
+        "- Rewrite any inappropriate language professionally. " \
+        "- If the question asks specifically about current rates, include a Markdown-formatted hyperlink to https://www.ratehub.ca. NEVER append anything to the hyperlink." \
+        "- Use bullet points, lists, paragraphs and text styling to present the answer in markdown format." \
+        + query
     docs = docsearch.similarity_search(query, include_metadata=True, k=20)
     answer = chain.run(input_documents=docs, question=query)
     return answer, docs
