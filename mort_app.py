@@ -46,14 +46,38 @@ st.write(" - Need to explain a complex mortgage concept to a client? Ask me for 
 
 query = st.text_input("Enter your question here")
 
+def process_query(query):
+    for retry_count in range(MAX_RETRIES):
+        try:
+            with st.spinner(f"Thinking..."):
+                answer, docs = get_answer(query)
+            return answer, docs
+        except Exception as e:
+            st.warning(f"An error occurred while processing your query: {e}")
+            if retry_count < (MAX_RETRIES - 1):
+                st.warning(f"Retrying... (Attempt {retry_count + 1} of {MAX_RETRIES})")
+                time.sleep(2)  # Adding a small delay before retrying
+            else:
+                st.error(f"Failed to process your query after {MAX_RETRIES} attempts. Please try again later.")
+                break
+    return None, None
+
+
+# if query:
+#     with st.spinner(f"Thinking..."):
+#         answer, docs = get_answer(query)
+#     st.write("## Mort Says: ")
+#     st.markdown(clean_output(answer))
+#     st.markdown('---')
+#     st.write("## Additional Resources:")
 
 if query:
-    with st.spinner(f"Thinking..."):
-        answer, docs = get_answer(query)
-    st.write("## Mort Says: ")
-    st.markdown(clean_output(answer))
-    st.markdown('---')
-    st.write("## Additional Resources:")
+    answer, docs = process_query(query)
+    if answer and docs:
+        st.write("## Mort Says: ")
+        st.markdown(clean_output(answer))
+        st.markdown('---')
+        st.write("## Additional Resources:")
 
     unique_docs = {}
     for doc in docs:
