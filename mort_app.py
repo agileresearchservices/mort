@@ -39,8 +39,8 @@ def get_answer(query):
 st.title("Mort, Your Brokerage AI Assistant")
 st.write("I am your virtual assistant. You can ask me questions or, I can perform tasks such as writing an email and other administrative tasks.")
 st.write("Here a few things to try:")
-st.write(" - Write an email following up with a customer to set up a meeting about their upcoming mortgage closing")
-st.write(" - Have a specific client scenario you need help with? Ask me for advice on how to structure the loan and find the best lender for their needs.")
+st.write(" - Ask me to write an email following up with a customer to set up a meeting about their upcoming mortgage closing")
+st.write(" - Suggest closing strategies for a bullish customer")
 st.write(" - Need to explain a complex mortgage concept to a client? Ask me for tips on how to simplify it and make it more understandable.")
 
 
