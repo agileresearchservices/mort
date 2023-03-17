@@ -16,7 +16,7 @@ embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
 index_name = "aimortgageapp"
 docsearch = Pinecone.from_existing_index(index_name, embeddings)
-llm = OpenAI(temperature=0.3, max_tokens=512 ,openai_api_key=OPENAI_API_KEY)
+llm = OpenAI(temperature=0.3, max_tokens=1024 ,openai_api_key=OPENAI_API_KEY)
 chain = load_qa_chain(llm, chain_type="stuff")
 resources = []
 
