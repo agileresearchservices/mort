@@ -22,7 +22,7 @@ resources = []
 
 def clean_output(output: str) -> str:
     # Remove special characters
-    cleaned_output = re.sub(r'[^a-zA-Z0-9,.:;?!()\- \n]', '', output)
+    cleaned_output = re.sub(r'[^a-zA-Z0-9,.:;?!()%\- \n]', '', output)
 
     # Add spaces after punctuation marks
     cleaned_output = re.sub(r'([.,:;?!()\-])(\w)', r'\1 \2', cleaned_output)
