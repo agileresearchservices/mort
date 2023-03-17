@@ -84,7 +84,7 @@ if query:
         cleaned_short_desc = clean_output(short_desc)
 
         st.markdown(f"### [{title}]({doc_info['parent_url']})")
-        st.markdown('**Short Description:** ' + cleaned_short_desc)
+        st.markdown(cleaned_short_desc)
         st.markdown(f"[Start from beginning]({doc_info['parent_url']})")
         st.markdown('**Jump to Moments:** ')
         child_urls = []
