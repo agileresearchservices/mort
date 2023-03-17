@@ -35,7 +35,7 @@ def get_answer(query):
         "- Be concise in your response " \
         "- If the context doesn't provide the necessary information, use general Mortgage, Banking, and Real Estate industry knowledge. " \
         "- Rewrite any inappropriate language professionally. " \
-        "- If the question asks specifically about current rates, include a Markdown-formatted hyperlink to https://www.ratehub.ca. NEVER append anything to the hyperlink." \
+        "- If the question asks specifically about current rates, include a Markdown-formatted hyperlink to https://www.ratehub.ca. NEVER append anything to the hyperlink. Do not include actual rates in the answer." \
         "- Use bullet points, lists, paragraphs and text styling to present the answer in markdown format." \
         + query
     docs = docsearch.similarity_search(query, include_metadata=True, k=20)
