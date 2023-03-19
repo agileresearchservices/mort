@@ -31,12 +31,12 @@ def clean_output(output: str) -> str:
     return cleaned_output
 
 def get_answer(query):
-    query = "Answer the question based on the context below. You should follow ALL the following rules when generating and answer: " \
-        "- Be concise in your response " \
+    query = "Answer the question based on the rules below. You should follow ALL the following rules when generating and answer: " \
+        "- Be concise in your response and attempt to answer the question clearly so a high school graduate can understand it. " \
         "- If the context doesn't provide the necessary information, use general Mortgage, Banking, and Real Estate industry knowledge. " \
         "- Rewrite any inappropriate language professionally. " \
-        "- Use bullet points, lists, paragraphs and text styling to present the answer in markdown format." \
-        + query
+        "- Use bullet points, lists, and paragraphs to present the answer in markdown format. " \
+        "Question: " + query + "Answer:"
     docs = docsearch.similarity_search(query, include_metadata=True, k=20)
     answer = chain.run(input_documents=docs, question=query)
     return answer, docs
