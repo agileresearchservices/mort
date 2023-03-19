@@ -8,9 +8,13 @@ from langchain.chains.question_answering import load_qa_chain
 from datetime import datetime
 import re
 
-OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
-PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
-PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
+# OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
+# PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
+# PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
+
+OPENAI_API_KEY = "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"
+PINECONE_API_KEY = "25503a02-7eed-4dbb-9358-d36203fc86b1"
+PINECONE_API_ENV = "us-east1-gcp"
 
 embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
@@ -68,15 +72,6 @@ def process_query(query):
                 break
     return None, None
 
-
-# if query:
-#     with st.spinner(f"Thinking..."):
-#         answer, docs = get_answer(query)
-#     st.write("## Mort Says: ")
-#     st.markdown(clean_output(answer))
-#     st.markdown('---')
-#     st.write("## Additional Resources:")
-
 if query:
     answer, docs = process_query(query)
     if answer and docs:
@@ -122,3 +117,33 @@ if query:
             child_urls.append(f"[{', '.join(timestamps)}]({child_url})")
         st.write(', '.join(child_urls))
 
+
+html_code = """
+<a href="www.qr-code-generator.com/" border="0" style="cursor:default" rel="nofollow">
+    <img src="https://chart.googleapis.com/chart?cht=qr&chl=https%3A%2F%2Fmort-ai.streamlit.app&chs=180x180&choe=UTF-8&chld=L|2">
+</a>
+"""
+
+css_code = """
+<style>
+    #my-container {
+        position: fixed;
+        top: 0;
+        right: 0;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        display: none;
+    }
+    @media screen and (min-width: 768px) {
+        #my-container {
+            display: block;
+        }
+    }
+</style>
+"""
+
+with st.container():
+    st.markdown("### Take me with you!")
+    st.markdown(html_code + css_code, unsafe_allow_html=True)
