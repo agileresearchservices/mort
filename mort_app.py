@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from uuid import uuid4
 from langchain.vectorstores import Pinecone
