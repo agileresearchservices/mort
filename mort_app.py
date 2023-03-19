@@ -46,8 +46,7 @@ st.write("I am your virtual assistant. You can ask me questions or, I can perfor
 st.write("Here a few things to try:")
 st.write(" - Ask me to write an email following up with a customer to set up a meeting about their upcoming mortgage closing")
 st.write(" - Suggest closing strategies for a bullish customer")
-st.write(" - Need to explain a complex mortgage concept to a client? Ask me for tips on how to simplify it and make it more understandable.")
-
+st.write(" - Need to explain a complex mortgage concept to a client? Like: \"What are points and why would a customer consider purchasing them?\"")
 
 query = st.text_input("Enter your question here")
 
