@@ -54,7 +54,6 @@ def retrieve(query):
     # get relevant contexts
     # pinecone_res = index.query(xq, top_k=10, include_metadata=True, sparse_vector=sq)
     pinecone_res = index.query(xq, top_k=10, include_metadata=True)
-    print(pinecone_res)
     contexts = [x['metadata']['text'] for x in pinecone_res['matches']]
 
     # build our prompt with the retrieved contexts included
@@ -114,13 +113,9 @@ def main():
             message(st.session_state["generated"][i], key=str(i))
             message(st.session_state["past"][i], is_user=True, key=str(i) + "_user", avatar_style="shapes")
 
-    # print(docs['matches'][0]['metadata']['title'])
-
     unique_docs = {}
     for doc in docs['matches']:
-        # print(doc['metadata']['title'])
         title = doc['metadata']['title']
-        # st.sidebar.write(doc['metadata']['title'])
         short_description = doc['metadata']['short_description']
         child_url = doc['metadata']['url_child']
         parent_url = doc['metadata']['url_parent']
