@@ -1,2 +1,4 @@
 secrets.txt
-mort_app_local.py
+*.bak
+
+
