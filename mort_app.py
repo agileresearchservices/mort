@@ -27,11 +27,11 @@ llm = OpenAI(
     temperature=0,
     openai_api_key=OPENAI_API_KEY,
     model_name="text-davinci-003",
-    max_tokens=256
+    max_tokens=1024
 )
 conversation_with_summary = ConversationChain(
     llm=llm,
-    memory=ConversationSummaryBufferMemory(llm=llm, max_token_limit=256)
+    memory=ConversationSummaryBufferMemory(llm=llm, max_token_limit=2048)
 )
 
 
@@ -52,8 +52,7 @@ def retrieve(query):
     xq = res['data'][0]['embedding']
 
     # get relevant contexts
-    # pinecone_res = index.query(xq, top_k=10, include_metadata=True, sparse_vector=sq)
-    pinecone_res = index.query(xq, top_k=10, include_metadata=True)
+    pinecone_res = index.query(xq, top_k=20, include_metadata=True)
     contexts = [x['metadata']['text'] for x in pinecone_res['matches']]
 
     # build our prompt with the retrieved contexts included
