@@ -1,26 +1,37 @@
-import time
 import streamlit as st
-from uuid import uuid4
-from langchain.vectorstores import Pinecone
-from langchain.embeddings.openai import OpenAIEmbeddings
+from streamlit_chat import message
 import pinecone
 from langchain.llms import OpenAI
-from langchain.chains.question_answering import load_qa_chain
-from datetime import datetime
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationSummaryBufferMemory
+import openai
 import re
+from datetime import datetime
 
 OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
 PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
 PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
 
-embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
-index_name = "aimortgageapp"
-docsearch = Pinecone.from_existing_index(index_name, embeddings)
-llm = OpenAI(temperature=0.3, max_tokens=1024 ,openai_api_key=OPENAI_API_KEY)
-chain = load_qa_chain(llm, chain_type="stuff")
-resources = []
-MAX_RETRIES = 3
+# initialize connection to pinecone (get API key at app.pinecone.io)
+pinecone.init(
+    api_key=PINECONE_API_KEY,
+    environment=PINECONE_API_ENV  # may be different, check at app.pinecone.io
+)
+# connect to index
+index = pinecone.Index(index_name)
+
+# Load the model and create a ConversationChain instance
+llm = OpenAI(
+    temperature=0,
+    openai_api_key=OPENAI_API_KEY,
+    model_name="text-davinci-003",
+    max_tokens=256
+)
+conversation_with_summary = ConversationChain(
+    llm=llm,
+    memory=ConversationSummaryBufferMemory(llm=llm, max_token_limit=256)
+)
+
 
 def clean_output(output: str) -> str:
     # Remove special characters
@@ -31,56 +42,86 @@ def clean_output(output: str) -> str:
 
     return cleaned_output
 
-def get_answer(query):
-    query = "Answer the question based on the rules below. You should follow ALL the following rules when generating and answer: " \
-        "- Be concise in your response and attempt to answer the question clearly so a high school graduate can understand it. " \
-        "- If the context doesn't provide the necessary information, use general Mortgage, Banking, and Real Estate industry knowledge. " \
-        "- Rewrite any inappropriate language professionally. " \
-        "- Use bullet points, lists, and paragraphs to present the answer in markdown format. " \
-        "Question: " + query + "Answer:"
-    docs = docsearch.similarity_search(query, include_metadata=True, k=20)
-    answer = chain.run(input_documents=docs, question=query)
-    return answer, docs
 
-st.title("Mort, Your Brokerage AI Assistant")
-st.write("I am your virtual assistant. You can ask me questions or, I can perform tasks such as writing an email and other administrative tasks.")
-st.write("Here a few things to try:")
-st.write(" - Ask me to write an email following up with a customer to set up a meeting about their upcoming mortgage closing")
-st.write(" - Suggest closing strategies for a bullish customer")
-st.write(" - Need to explain a complex mortgage concept to a client? Like: \"What are points and why would a customer consider purchasing them?\"")
+# Define the retrieve function
+def retrieve(query):
+    # retrieve from Pinecone
+    res = openai.Embedding.create(input=[query], model=EMBEDDING_MODEL)
+    xq = res['data'][0]['embedding']
 
-query = st.text_input("Enter your question here")
+    # get relevant contexts
+    # pinecone_res = index.query(xq, top_k=10, include_metadata=True, sparse_vector=sq)
+    pinecone_res = index.query(xq, top_k=10, include_metadata=True)
+    print(pinecone_res)
+    contexts = [x['metadata']['text'] for x in pinecone_res['matches']]
 
-def process_query(query):
-    for retry_count in range(MAX_RETRIES):
-        try:
-            with st.spinner(f"Thinking..."):
-                answer, docs = get_answer(query)
-            return answer, docs
-        except Exception as e:
-            st.warning(f"An error occurred while processing your query: {e}")
-            if retry_count < (MAX_RETRIES - 1):
-                st.warning(f"Retrying... (Attempt {retry_count + 1} of {MAX_RETRIES})")
-                time.sleep(2)  # Adding a small delay before retrying
-            else:
-                st.error(f"Failed to process your query after {MAX_RETRIES} attempts. Please try again later.")
-                break
-    return None, None
+    # build our prompt with the retrieved contexts included
+    prompt_start = (
+        "Answer the question based on the rules below. You should follow ALL the following rules when generating and answer: "
+        "- My name is Mort and I am a personal brokerage assistant. I help brokers with questions and techniques to be successful."
+        "- Be concise in your response and attempt to answer the question clearly so a high school graduate can understand it. "
+        "- If the context doesn't provide the necessary information, use general Mortgage, Banking, and Real Estate industry knowledge. "
+        "- Rewrite any inappropriate language professionally. "
+        "- Use bullet points, lists, and paragraphs to present the answer in markdown format. "
+        "\n\nContext:\n"
+    )
 
-if query:
-    answer, docs = process_query(query)
-    if answer and docs:
-        st.write("## Mort Says: ")
-        st.markdown(answer)
-        st.markdown('---')
-        st.write("## Additional Resources:")
+    prompt_end = (
+        f"\n\nQuestion: {query}\nAnswer:"
+    )
+
+    prompt = (
+            prompt_start +
+            "\n\n---\n\n".join(contexts) +
+            prompt_end
+    )
+    return prompt, pinecone_res
+
+
+# From here down is all the StreamLit UI.
+st.write("### Mort+ Demo")
+
+if "generated" not in st.session_state:
+    st.session_state["generated"] = []
+
+if "past" not in st.session_state:
+    st.session_state["past"] = []
+
+
+def get_text():
+    input_text = st.text_input("You: ", "Who is Mort?", key="input")
+    return input_text
+
+
+# Main function for the Streamlit app
+def main():
+    st.title("Mort+, Your Brokerage AI Assistant")
+
+    user_input = get_text()
+
+    if user_input:
+        with st.spinner("Thinking..."):
+            query = user_input
+            query_with_contexts, docs = retrieve(query)
+            output = conversation_with_summary.predict(input=query_with_contexts)
+            st.session_state.past.append(user_input)
+            st.session_state.generated.append(output)
+
+    if st.session_state["generated"]:
+        for i in range(len(st.session_state["generated"]) - 1, -1, -1):
+            message(st.session_state["generated"][i], key=str(i))
+            message(st.session_state["past"][i], is_user=True, key=str(i) + "_user", avatar_style="shapes")
+
+    # print(docs['matches'][0]['metadata']['title'])
 
     unique_docs = {}
-    for doc in docs:
-        title = str(doc.metadata.get('title'))
-        short_description = str(doc.metadata.get('short_description'))
-        child_url = str(doc.metadata.get('url_child'))
-        parent_url = str(doc.metadata.get('url_parent'))
+    for doc in docs['matches']:
+        # print(doc['metadata']['title'])
+        title = doc['metadata']['title']
+        # st.sidebar.write(doc['metadata']['title'])
+        short_description = doc['metadata']['short_description']
+        child_url = doc['metadata']['url_child']
+        parent_url = doc['metadata']['url_parent']
         try:
             timestamp = datetime.strptime(str(doc.metadata.get('timestamp')), "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
         except ValueError:
@@ -95,6 +136,7 @@ if query:
             else:
                 unique_docs[key]['child_urls'][child_url].add(timestamp)
 
+    st.sidebar.title('Helpful Resources')
     for title_desc, doc_info in unique_docs.items():
         title, short_desc = title_desc.split('||')
 
@@ -103,42 +145,15 @@ if query:
 
         cleaned_short_desc = clean_output(short_desc)
 
-        st.markdown(f"### [{title}]({doc_info['parent_url']})")
-        st.markdown(cleaned_short_desc)
-        st.markdown(f"[Start from beginning]({doc_info['parent_url']})")
-        st.markdown('**Jump to Moments:** ')
+        st.sidebar.markdown(f"### [{title}]({doc_info['parent_url']})")
+        st.sidebar.markdown(cleaned_short_desc)
+        st.sidebar.markdown(f"[Start from beginning]({doc_info['parent_url']})")
+        st.sidebar.markdown('**Jump to Moments:** ')
         child_urls = []
         for child_url, timestamps in doc_info['child_urls'].items():
             child_urls.append(f"[{', '.join(timestamps)}]({child_url})")
-        st.write(', '.join(child_urls))
+        st.sidebar.write(', '.join(child_urls))
 
 
-html_code = """
-<a href="https://mort-ai.streamlit.app" border="0" style="cursor:default" rel="nofollow">
-    <img src="https://chart.googleapis.com/chart?cht=qr&chl=https%3A%2F%2Fmort-ai.streamlit.app&chs=180x180&choe=UTF-8&chld=L|2">
-</a>
-"""
-
-css_code = """
-<style>
-    #my-container {
-        position: fixed;
-        top: 0;
-        right: 0;
-        padding: 10px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        display: none;
-    }
-    @media screen and (min-width: 768px) {
-        #my-container {
-            display: block;
-        }
-    }
-</style>
-"""
-
-with st.container():
-    st.markdown("### Take me with you!")
-    st.markdown(html_code + css_code, unsafe_allow_html=True)
+if __name__ == "__main__":
+    main()
