@@ -11,6 +11,8 @@ from datetime import datetime
 OPENAI_API_KEY =  st.secrets["OPENAI_API_KEY"]
 PINECONE_API_KEY =  st.secrets["PINECONE_API_KEY"]
 PINECONE_API_ENV =  st.secrets["PINECONE_API_ENV"]
+index_name = "aimortgageapp"
+EMBEDDING_MODEL = 'text-embedding-ada-002'
 
 # initialize connection to pinecone (get API key at app.pinecone.io)
 pinecone.init(
